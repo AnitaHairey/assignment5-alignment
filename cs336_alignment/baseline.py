@@ -5,9 +5,9 @@ import json
 import os
 from collections import Counter
 
-QWEN_BASE_PATH = "/data/models/Qwen2.5-Math-1.5B"
-# LLAMA_8B_PATH = "/data/models/Llama-3.1-8B"
-# LLAMA_70B_PATH = "/data/models/Llama-3.3-70B-Instruct"
+QWEN_BASE_PATH = "models/Qwen2.5-Math-1.5B"
+# LLAMA_8B_PATH = "models/Llama-3.1-8B"
+# LLAMA_70B_PATH = "models/Llama-3.3-70B-Instruct"
 
 def run_vllm(vllm_model, prompts, sampling_params) -> List[str]:
     outputs = vllm_model.generate(prompts, sampling_params)
@@ -89,11 +89,11 @@ def main(data_path: str, model_path: str, output_path: str, prompt_path: str):
     serialize_results(info_dicts, output_path)
 
 if __name__ == "__main__":
-    data_path = "/data/MATH/validation.jsonl"
+    data_path = "data/MATH/validation.jsonl"
     model_path = QWEN_BASE_PATH
 
     prompt_path = "prompts/r1_zero.prompt"
-    output_dir = "/results/baseline"
+    output_dir = "results/baseline"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{model_path.split('/')[-1]}_r1_zero.jsonl")
     main(data_path, model_path, output_path, prompt_path)

@@ -1,0 +1,42 @@
+{
+  "os": "Linux-6.8.0-49-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.12.11",
+  "startedAt": "2025-07-11T12:23:54.958433Z",
+  "program": "/workspace/assignment5-alignment/cs336_alignment/sft.py",
+  "codePath": "cs336_alignment/sft.py",
+  "git": {
+    "remote": "https://github.com/AnitaHairey/assignment5-alignment.git",
+    "commit": "e2784bf061b70b1305d2f368287438cc17e08726"
+  },
+  "email": "momonesun@gmail.com",
+  "root": "/workspace/assignment5-alignment",
+  "host": "352f9ea0305a",
+  "executable": "/workspace/assignment5-alignment/.venv/bin/python",
+  "codePathLocal": "cs336_alignment/sft.py",
+  "cpu_count": 96,
+  "cpu_count_logical": 192,
+  "gpu": "NVIDIA H100 PCIe",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "21474836480",
+      "used": "10564915200"
+    }
+  },
+  "memory": {
+    "total": "1623007846400"
+  },
+  "cpu": {
+    "count": 96,
+    "countLogical": 192
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA H100 PCIe",
+      "memoryTotal": "85520809984",
+      "cudaCores": 14592,
+      "architecture": "Hopper"
+    }
+  ],
+  "cudaVersion": "12.4"
+}

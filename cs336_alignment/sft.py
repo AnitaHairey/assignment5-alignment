@@ -15,7 +15,7 @@ from vllm.model_executor import set_random_seed as vllm_set_random_seed
 
 from cs336_alignment.baseline import evaluate_vllm, r1_zero_reward_fn, load_and_format_prompts
 
-QWEN_BASE_PATH = "/data/models/Qwen2.5-Math-1.5B"
+QWEN_BASE_PATH = "models/Qwen2.5-Math-1.5B"
 
 def init_vllm(model_id: str, device: str, seed: int, gpu_memory_utilization: float = 0.25):
     """
@@ -374,7 +374,7 @@ if __name__ == "__main__":
     parser.add_argument("--microbatch_size", type=int, default=2)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=4)
     parser.add_argument("--data_amount", type=int, default=128)
-    parser.add_argument("--output_dir", type=str, default="/results/sft")
+    parser.add_argument("--output_dir", type=str, default="results/sft")
     parser.add_argument("--eval_steps", type=int, default=64)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--learning_rate", type=float, default=5e-5)
@@ -388,11 +388,11 @@ if __name__ == "__main__":
     if args.from_filtered:
         sft_data_path = os.path.join(args.output_dir, "filtered_training_data.jsonl")
     else:
-        sft_data_path = "/data/MATH/sft.jsonl"
+        sft_data_path = "data/MATH/sft.jsonl"
 
     main(
         sft_data_path=sft_data_path,
-        eval_data_path="/data/MATH/validation.jsonl",
+        eval_data_path="data/MATH/validation.jsonl",
         model_path=QWEN_BASE_PATH,
         output_dir=args.output_dir,
         microbatch_size=args.microbatch_size,
