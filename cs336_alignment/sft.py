@@ -195,11 +195,11 @@ def log_generations(model, vllm, eval_prompts, eval_answers, reward_fn,
                "eval_step": total_train_steps})
 
     # print one sample
-    print(f"Prompt: {eval_results[0]['prompt']}")
-    print(f"Answer: {eval_results[0]['answer']}")
-    print(f"Response: {eval_results[0]['response']}")
-    print(f"Format Reward: {eval_results[0]['format_reward']}")
-    print(f"Answer Reward: {eval_results[0]['answer_reward']}")
+    # print(f"Prompt: {eval_results[0]['prompt']}")
+    # print(f"Answer: {eval_results[0]['answer']}")
+    # print(f"Response: {eval_results[0]['response']}")
+    # print(f"Format Reward: {eval_results[0]['format_reward']}")
+    # print(f"Answer Reward: {eval_results[0]['answer_reward']}")
 
     return avg_answer_reward, avg_format_reward
 
@@ -222,7 +222,6 @@ def sft_training_loop(
     learning_rate: float = 1e-5,
     max_grad_norm: float | None = 1.0,
     epochs: int = 10,
-    save_filtered: bool = False,
     half_dataset: bool = False,
     starting_step: int = 0,
 ) -> None:
@@ -299,26 +298,6 @@ def sft_training_loop(
         print("Saving best model")
         save_model_tokenizer(model, tokenizer, output_dir, "best")
 
-    if save_filtered:
-        print("Evaluating training data to filter correct examples...")
-        train_info_dicts = evaluate_vllm(llm, r1_zero_reward_fn, sft_prompts, sft_answers, eval_sampling_params)
-
-        filtered_data = []
-        for info_dict in train_info_dicts:
-            if info_dict["answer_reward"] == 1.0:
-                filtered_data.append({
-                    "prompt": info_dict["prompt"],
-                    "response": info_dict["response"],
-                    "ground_truth": info_dict["answer"],
-                })
-
-        filtered_output_path = os.path.join(output_dir, "filtered_training_data.jsonl")
-        print(f"Filtered {len(filtered_data)} examples")
-        print(f"Saving {len(filtered_data)} filtered examples to {filtered_output_path}")
-        with open(filtered_output_path, "w") as f:
-            for item in filtered_data:
-                f.write(json.dumps(item) + "\n")
-
     return total_train_steps
 
 def load_sft_data(data_path: str, data_amount: int) -> tuple[List[str], List[str], List[str]]:
@@ -340,7 +319,7 @@ def load_sft_data(data_path: str, data_amount: int) -> tuple[List[str], List[str
 def main(sft_data_path: str, eval_data_path: str, model_path: str, output_dir: str,
          microbatch_size: int, gradient_accumulation_steps: int, data_amount: int,
          eval_steps: int, epochs: int, learning_rate: float = 1e-5, max_grad_norm: float = 1.0, experiment_name: str = "sft",
-         save_filtered: bool = False, from_filtered: bool = False):
+         from_filtered: bool = False):
     setup_wandb(experiment_name)
 
     # load model and tokenizer
@@ -367,7 +346,7 @@ def main(sft_data_path: str, eval_data_path: str, model_path: str, output_dir: s
     load_policy_into_vllm_instance(model, llm)
     sft_training_loop(model, tokenizer, llm, sft_prompts, sft_cots, sft_answers, gradient_accumulation_steps,
                       microbatch_size, train_device, eval_prompts, eval_answers,
-                      eval_steps, eval_sampling_params, output_dir, learning_rate=learning_rate, max_grad_norm=max_grad_norm, epochs=epochs, save_filtered=save_filtered)
+                      eval_steps, eval_sampling_params, output_dir, learning_rate=learning_rate, max_grad_norm=max_grad_norm, epochs=epochs)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -380,13 +359,12 @@ if __name__ == "__main__":
     parser.add_argument("--learning_rate", type=float, default=5e-5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0, help="Maximum gradient norm for gradient clipping")
     parser.add_argument("--experiment_name", type=str, default="sft_128")
-    parser.add_argument("--save_filtered", action="store_true")
     parser.add_argument("--from_filtered", action="store_true")
     args = parser.parse_args()
     print(args.epochs)
 
     if args.from_filtered:
-        sft_data_path = os.path.join(args.output_dir, "filtered_training_data.jsonl")
+        sft_data_path = "data/MATH/sft_filtered.jsonl"
     else:
         sft_data_path = "data/MATH/sft.jsonl"
 
@@ -403,6 +381,5 @@ if __name__ == "__main__":
         learning_rate=args.learning_rate,
         max_grad_norm=args.max_grad_norm,
         experiment_name=args.experiment_name,
-        save_filtered=args.save_filtered,
         from_filtered=args.from_filtered
     )
